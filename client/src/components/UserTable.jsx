@@ -58,19 +58,16 @@ export default function UserTable({ users, selectedIds, onSelectChange, loading 
   if (loading) {
     return (
       <div className="text-center py-5">
-        <div className="spinner-border text-secondary" role="status">
-          <span className="visually-hidden">Loading…</span>
-        </div>
+        <div className="spinner-border text-secondary" />
       </div>
     );
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table table-hover table-bordered align-middle mb-0">
-        <thead className="table-dark">
-          <tr>
-            <th style={{ width: 40 }} className="text-center">
+    <table className="table table-hover mb-0" style={{ fontSize: 14 }}>
+      <thead>
+          <tr style={{ borderBottom: '2px solid #dee2e6' }}>
+            <th style={{ width: 44, paddingLeft: 16  }} className="py-3">
               <input
                 type="checkbox"
                 className="form-check-input"
@@ -81,43 +78,80 @@ export default function UserTable({ users, selectedIds, onSelectChange, loading 
                 title="Select / deselect all"
               />
             </th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Last Login ↓</th>
-            <th>Status</th>
+            <th className="py-3 fw-semibold">Name</th>
+            <th className="py-3 fw-semibold">Email <i className="bi bi-arrow-down" style={{ fontSize: 11 }} />
+            </th>
+            <th className="py-3 fw-semibold">Status</th>
+            <th className="py-3 fw-semibold">Last seen</th>
           </tr>
         </thead>
         <tbody>
           {users.length === 0 ? (
             <tr>
-              <td colSpan={5} className="text-center text-muted py-4">
+              <td colSpan={5} className="text-center text-muted py-5">
                 No users found.
               </td>
             </tr>
           ) : (
             users.map(user => {
               const checked = selectedIds.includes(user.id);
+              const blocked  = user.status === 'blocked';
+              const relative = timeAgo(user.last_login);
+              const exact    = exactTime(user.last_login);
               return (
-                <tr key={user.id} className={checked ? 'table-active' : ''}>
-                  <td className="text-center">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id={getUniqIdValue('chk', user.id)}
-                      checked={checked}
-                      onChange={() => toggleOne(user.id)}
-                    />
+                <tr key={user.id} style={{ background: checked ? '#e8f0fe' : 'transparent' }}>
+                    <td style={{ paddingLeft: 16, verticalAlign: 'middle' }}>
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id={getUniqIdValue('chk', user.id)}
+                        checked={checked}
+                        onChange={() => toggleOne(user.id)}
+                      />
+                    </td>
+
+                    <td style={{ verticalAlign: 'middle' }}>
+                    <div style={blocked
+                      ? { textDecoration: 'line-through', color: '#888' }
+                      : { color: '#212529' }}>
+                      {user.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: '#9e9e9e', marginTop: 1 }}>
+                      N/A
+                    </div>
                   </td>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{formatTime(user.last_login)}</td>
-                  <td><StatusBadge status={user.status} /></td>
+
+                  <td style={{ verticalAlign: 'middle', color: blocked ? '#aaa' : '#212529' }}>
+                    {user.email}
+                  </td>
+
+                  <td style={{ verticalAlign: 'middle' }}>
+                    <StatusText status={user.status} />
+                  </td>
+                  <td style={{ verticalAlign: 'middle' }}>
+                    {relative ? (
+                      <>
+                        <div>{relative}</div>
+                        <div
+                          style={{
+                            fontSize: 11, color: '#9e9e9e', marginTop: 2,
+                            cursor: 'help', borderBottom: '1px dotted #bbb',
+                            display: 'inline-block',
+                          }}
+                          title={exact}
+                        >
+                          {exact}
+                        </div>
+                      </>
+                    ) : (
+                      <span className="text-muted">Never logged in</span>
+                    )}
+                  </td>
                  </tr>
               );
             })
           )}
         </tbody>
       </table>
-    </div>
   );
 }

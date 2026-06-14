@@ -6,9 +6,11 @@ import api       from '../api';
 
 export default function Users({ onLogout }) {
   const [users,       setUsers]       = useState([]);
+  const [filtered,    setFiltered]    = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading,     setLoading]     = useState(true);
   const [toast,       setToast]       = useState(null); // { text, type }
+  const [filter,      setFilter]      = useState('');
   const location = useLocation();
 
   useEffect(() => {
@@ -16,6 +18,17 @@ export default function Users({ onLogout }) {
       showToast(location.state.message, 'info');
     }
   }, [location.state]);
+
+  useEffect(() => {
+    const q = filter.toLowerCase();
+    setFiltered(
+      q ? users.filter(u =>
+        u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+      ) : users
+    );
+    // Clear selection when filter changes to avoid acting on hidden users
+    setSelectedIds([]);
+  }, [filter, users]);
 
   function showToast(text, type = 'success') {
     setToast({ text, type });
@@ -43,7 +56,6 @@ export default function Users({ onLogout }) {
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-  // NOTE: All toolbar actions flow through here
   async function handleAction(action) {
     setLoading(true);
     try {
@@ -66,19 +78,16 @@ export default function Users({ onLogout }) {
     }
   }
 
-  function handleLogout() {
-    onLogout();
-  }
 
   return (
-    <div>
+    <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid px-4">
           <span className="navbar-brand fw-semibold">
             <i className="bi bi-people-fill me-2" />
             User Manager
           </span>
-          <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
+          <button className="btn btn-outline-light btn-sm" onClick={() => onLogout()}>
             <i className="bi bi-box-arrow-right me-1" />
             Logout
           </button>
@@ -94,21 +103,26 @@ export default function Users({ onLogout }) {
           </div>
         )}
 
+        <div className="card border shadow-sm">
         <Toolbar
           selectedIds={selectedIds}
+          users={filtered}
           onAction={handleAction}
           loading={loading}
+          filter={filter}
+          onFilter={setFilter}
         />
 
         <UserTable
-          users={users}
+          users={filtered}
           selectedIds={selectedIds}
           onSelectChange={setSelectedIds}
           loading={loading}
         />
+        </div>
 
-        <div className="mt-2 text-muted small">
-          {users.length} user(s) total
+        <div className="mt-2 text-muted small ps-1">
+          {filtered.length} of {users.length} user(s)
         </div>
       </div>
     </div>
