@@ -14,7 +14,7 @@ function timeAgo(date) {
   return `${Math.floor(seconds / 604800)} weeks ago`;
 }
 
-function formatTime(date) {
+function exactTime(date) {
   if (!date) return '';
   return new Date(date).toLocaleString('en-GB', {
     day: '2-digit', month: 'long', year: 'numeric',

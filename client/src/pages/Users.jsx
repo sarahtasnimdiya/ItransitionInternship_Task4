@@ -9,7 +9,7 @@ export default function Users({ onLogout }) {
   const [filtered,    setFiltered]    = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading,     setLoading]     = useState(true);
-  const [toast,       setToast]       = useState(null); // { text, type }
+  const [toast,       setToast]       = useState(null); 
   const [filter,      setFilter]      = useState('');
   const location = useLocation();
 
@@ -26,7 +26,6 @@ export default function Users({ onLogout }) {
         u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
       ) : users
     );
-    // Clear selection when filter changes to avoid acting on hidden users
     setSelectedIds([]);
   }, [filter, users]);
 
@@ -81,9 +80,12 @@ export default function Users({ onLogout }) {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg "
+        style={{background: 'linear-gradient(90deg, #0d47a1, #1a73e8)',
+            color: 'white'
+          }} >
         <div className="container-fluid px-4">
-          <span className="navbar-brand fw-semibold">
+          <span className="navbar-brand fw-semibold text-white d-flex align-items-center gap-2 mb-0">
             <i className="bi bi-people-fill me-2" />
             User Manager
           </span>
