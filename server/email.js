@@ -8,6 +8,14 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+
+
+tls: {
+    rejectUnauthorized: false,
+  },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
 });
 
 transporter.verify((error) => {
@@ -18,7 +26,8 @@ transporter.verify((error) => {
 async function sendVerificationEmail(toEmail, token) {
   const link = `${process.env.SERVER_URL}/api/auth/verify/${token}`;
 
-  await transporter.sendMail({
+    try {
+    const info = await transporter.sendMail({
     from: `"User Manager" <${process.env.EMAIL_USER}>`,
     to: toEmail,
     subject: 'Verify your e-mail',
@@ -29,6 +38,15 @@ async function sendVerificationEmail(toEmail, token) {
       <p>If you did not register, ignore this message.</p>
     `,
   });
+  console.log('Verification email sent to:', toEmail, '| ID:', info.messageId);
+}
+ catch (err) {
+    console.error('Failed to send verification email to:', toEmail);
+    console.error('Error:', err.message);
+  }
+
 }
 
 module.exports = { sendVerificationEmail };
+
+
