@@ -4,7 +4,7 @@ import Toolbar   from '../components/Toolbar';
 import UserTable from '../components/UserTable';
 import api       from '../api';
 
-export default function Users({ onLogout }) {
+export default function Users({ onLogout, currentUserId }) {
   const [users,       setUsers]       = useState([]);
   const [filtered,    setFiltered]    = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -77,6 +77,17 @@ export default function Users({ onLogout }) {
     }
   }
 
+    async function handleVerifySelf() {
+    try {
+      const result = await api.verifySelf();
+      showToast(result.message, 'success');
+      await fetchUsers();
+    } catch (err) {
+      handleAuthError(err);
+      showToast(err.response?.data?.message || 'Verification failed.', 'danger');
+    }
+  }
+
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8f9fa' }}>
@@ -120,6 +131,8 @@ export default function Users({ onLogout }) {
           selectedIds={selectedIds}
           onSelectChange={setSelectedIds}
           loading={loading}
+          currentUserId={currentUserId}
+          onVerifySelf={handleVerifySelf} 
         />
         </div>
 

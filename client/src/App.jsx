@@ -7,7 +7,11 @@ import Users    from './pages/Users';
 export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
 
-  function handleLogin(newToken) {
+  const currentUserId = token
+    ? JSON.parse(atob(token.split('.')[1])).id
+    : null;
+    
+    function handleLogin(newToken) {
     localStorage.setItem('token', newToken);
     setToken(newToken);
   }
@@ -23,7 +27,7 @@ export default function App() {
       <Routes>
         <Route path="/login"    element={token ? <Navigate to="/" /> : <Login    onLogin={handleLogin} />} />
         <Route path="/register" element={token ? <Navigate to="/" /> : <Register onLogin={handleLogin} />} />
-        <Route path="/"         element={token ? <Users onLogout={handleLogout} /> : <Navigate to="/login" />} />
+        <Route path="/"         element={token ? <Users onLogout={handleLogout} currentUserId={currentUserId}/> : <Navigate to="/login" />} />
         <Route path="*"         element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

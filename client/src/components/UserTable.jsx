@@ -31,7 +31,7 @@ function StatusText({ status }) {
   );
 }
 
-export default function UserTable({ users, selectedIds, onSelectChange, loading }) {
+export default function UserTable({ users, selectedIds, onSelectChange, loading, currentUserId, onVerifySelf  }) {
   const allSelected  = users.length > 0 && selectedIds.length === users.length;
   const someSelected = selectedIds.length > 0 && selectedIds.length < users.length;
 
@@ -127,9 +127,21 @@ export default function UserTable({ users, selectedIds, onSelectChange, loading 
 
                   <td style={{ verticalAlign: 'middle' }}>
                     <StatusText status={user.status} />
+                      {user.id === currentUserId && user.status === 'unverified' && (
+                          <button
+                            className="btn btn-link btn-sm p-0 ms-2"
+                            style={{ fontSize: 12, verticalAlign: 'baseline' }}
+                            onClick={onVerifySelf}
+                            title="Click to verify your email address"
+                          >
+                            Verify
+                          </button>
+                        )}
                   </td>
                   <td style={{ verticalAlign: 'middle' }}>
-                    {relative ? (
+                    {user.id === currentUserId ? (
+                        <span style={{ color: '#198754', fontWeight: 500 }}>Now</span>
+                      ) : relative ? (
                       <>
                         <div>{relative}</div>
                         <div
@@ -145,7 +157,8 @@ export default function UserTable({ users, selectedIds, onSelectChange, loading 
                       </>
                     ) : (
                       <span className="text-muted">Never logged in</span>
-                    )}
+                    )
+                  }
                   </td>
                  </tr>
               );

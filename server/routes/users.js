@@ -100,4 +100,22 @@ router.delete('/', async (req, res) => {
   }
 });
 
+router.post('/verify-self', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `UPDATE users SET status = 'active', verify_token = NULL
+       WHERE id = $1 AND status = 'unverified'
+       RETURNING id`,
+      [req.user.id]
+    );
+    if (rows.length === 0) {
+      return res.status(400).json({ message: 'Account is already verified.' });
+    }
+    res.json({ message: 'Email verified! Your account is now active.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Verification failed.' });
+  }
+});
+
 module.exports = router;
