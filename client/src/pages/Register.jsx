@@ -10,6 +10,7 @@ export default function Register({ onLogin }) {
   const [error,    setError]    = useState('');
   const [loading,  setLoading]  = useState(false);
 
+  const [pendingToken, setPendingToken] = useState(null);
   const [verifyToken,  setVerifyToken]  = useState(null);
   const [successMsg,   setSuccessMsg]   = useState('');
   const [verifying,    setVerifying]    = useState(false);
@@ -29,7 +30,7 @@ export default function Register({ onLogin }) {
     setLoading(true);
     try {
       const data = await api.register(name, email, password);
-      onLogin(data.token);
+      setPendingToken(data.token);
       setVerifyToken(data.verifyToken);
       setSuccessMsg(data.message);
     } catch (err) {
@@ -45,7 +46,10 @@ export default function Register({ onLogin }) {
       await api.verifyEmail(verifyToken);
       setVerified(true);
       setSuccessMsg('Email verified! Your account is now active.');
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => {
+        onLogin(pendingToken); 
+        navigate('/', { state: { message: 'Email verified! Your account is now active.' } });
+       }, 1500);
     } catch {
       setSuccessMsg('Verification failed. Try clicking the link in your email instead.');
     } finally {
@@ -88,7 +92,10 @@ export default function Register({ onLogin }) {
                 <button
                   className="btn btn-link text-muted p-0"
                   style={{ fontSize: 13 }}
-                  onClick={() => navigate('/')}
+                  onClick={() => {
+                    onLogin(pendingToken);
+                    navigate('/', { state: { message: successMsg } });
+                  }}
                 >
                   Skip for now →
                 </button>
