@@ -44,6 +44,7 @@ router.post('/register', async (req, res) => {
       token,
       user: { id: user.id, name: user.name, email: user.email, status: user.status },
       message: 'Registration successful! A verification link has been sent to your email.',
+      verifyToken,
     });
   } catch (err) {
     console.error('Register error:', err);

@@ -11,6 +11,7 @@ http.interceptors.request.use(cfg => {
 export default {
   login:    (email, password) => http.post('/auth/login',    { email, password }).then(r => r.data),
   register: (name, email, password) => http.post('/auth/register', { name, email, password }).then(r => r.data),
+  verifyEmail: (token) => http.get(`/auth/verify/${token}`).then(r => r.data), // add this
 
   getUsers:        ()    => http.get('/users').then(r => r.data),
   blockUsers:      (ids) => http.post('/users/block',    { ids }).then(r => r.data),
